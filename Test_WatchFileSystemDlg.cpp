@@ -66,7 +66,8 @@ BEGIN_MESSAGE_MAP(CTestWatchFileSystemDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_DROPFILES()
-	ON_REGISTERED_MESSAGE(Message_CWatchFileSystem, &CTestWatchFileSystemDlg::on_message_CWatchFileSystem)
+	ON_REGISTERED_MESSAGE(Message_CDirectoryChangeWatcher, &CTestWatchFileSystemDlg::on_message_CDirectoryChangeWatcher)
+	ON_BN_CLICKED(IDOK, &CTestWatchFileSystemDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -103,12 +104,17 @@ BOOL CTestWatchFileSystemDlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 	DragAcceptFiles();
+	m_dir_watcher.WatchDirectory(_T("D:\\temp"), m_hWnd);
+	m_dir_watcher.WatchDirectory(_T("D:\\temp1"), m_hWnd);
+	m_dir_watcher.WatchDirectory(_T("D:\\test"), m_hWnd, false);
 
-	m_watch_fs.init(m_hWnd);
+	TCHAR ch = '1';
+	ch = _totlower(ch);
+	//m_watch_fs.init(m_hWnd);
 
-	m_watch_fs.add(_T("D:\\temp"));
-	m_watch_fs.add(_T("D:\\temp1"));
-	m_watch_fs.add(_T("D:\\test"));
+	//m_watch_fs.add(_T("D:\\temp"));
+	//m_watch_fs.add(_T("D:\\temp1"));
+	//m_watch_fs.add(_T("D:\\test"));
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -178,7 +184,8 @@ void CTestWatchFileSystemDlg::OnDropFiles(HDROP hDropInfo)
 		{
 			if (PathIsDirectory(path))
 			{
-				m_watch_fs.add(path);
+				//m_watch_fs.add(path);
+
 			}
 			else
 			{
@@ -190,9 +197,19 @@ void CTestWatchFileSystemDlg::OnDropFiles(HDROP hDropInfo)
 	CDialogEx::OnDropFiles(hDropInfo);
 }
 
-LRESULT CTestWatchFileSystemDlg::on_message_CWatchFileSystem(WPARAM wParam, LPARAM lParam)
+LRESULT CTestWatchFileSystemDlg::on_message_CDirectoryChangeWatcher(WPARAM wParam, LPARAM lParam)
 {
-	CWatchFileSystemMessage* msg = (CWatchFileSystemMessage*)wParam;
-	TRACE(_T("msg = %d, action = %d, full_path = %s, filename = %s\n"), msg->message, msg->action, msg->target_path, msg->filename);
+	//FILE_ACTION_ADDED(1), FILE_ACTION_REMOVED(2), FILE_ACTION_RENAMED_OLD_NAME(4)
+	CDirectoryChangeWatcherMessage* msg = (CDirectoryChangeWatcherMessage*)wParam;
+	TRACE(_T("action = %d, filename0 = %s, filename1 = %s\n"), msg->action, msg->filename0, msg->filename1);
 	return 0;
+}
+
+
+void CTestWatchFileSystemDlg::OnBnClickedOk()
+{
+	m_dir_watcher.UnwatchAllDirectories();
+	//m_dir_watcher.UnwatchDirectory(_T("D:\\temp"));
+	//m_dir_watcher.UnwatchDirectory(_T("D:\\temp1"));
+	//m_dir_watcher.WatchDirectory(_T("D:\\test"));
 }

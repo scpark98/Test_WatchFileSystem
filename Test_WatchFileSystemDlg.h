@@ -4,7 +4,9 @@
 
 #pragma once
 
-#include "../../Common/file_system/WatchFileSystem/WatchFileSystem.h"
+//#include "../../Common/file_system/WatchFileSystem/WatchFileSystem.h"
+#include "../../Common/file_system/DirectoryChanges/DirectoryChanges.h"
+#include "../../Common/file_system/DirectoryChanges/DelayedDirectoryChangeHandler.h"
 
 // CTestWatchFileSystemDlg 대화 상자
 class CTestWatchFileSystemDlg : public CDialogEx
@@ -13,7 +15,7 @@ class CTestWatchFileSystemDlg : public CDialogEx
 public:
 	CTestWatchFileSystemDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
 
-	LRESULT		on_message_CWatchFileSystem(WPARAM wParam, LPARAM lParam);
+	LRESULT		on_message_CDirectoryChangeWatcher(WPARAM wParam, LPARAM lParam);
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -21,7 +23,8 @@ public:
 #endif
 
 protected:
-	CWatchFileSystem	m_watch_fs;
+	//CWatchFileSystem	m_watch_fs;
+	CDirectoryChangeWatcher			m_dir_watcher;
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
@@ -39,4 +42,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnDropFiles(HDROP hDropInfo);
+	afx_msg void OnBnClickedOk();
 };
